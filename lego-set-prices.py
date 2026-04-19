@@ -29,18 +29,14 @@ df_clean['ROI_Percent'] = (df_clean['Value_Change'] / df_clean['USD_MSRP']) * 10
 most_appreciated = df_clean.sort_values(by='Value_Change', ascending=False)#sort sets by highest appreciation
 most_depreciated = df_clean.sort_values(by='Value_Change', ascending=True)#sort sets by highest depreciation
 columns_to_print = ['Name', 'Theme', 'USD_MSRP', 'Current_Price', 'Value_Change', 'ROI_Percent']#columns we want displayed in outputs
-print("\n" + "="*50)
 
 #top 5 most appreciated
 print("TOP 5 MOST APPRECIATED LEGO SETS (By Dollar Amount)")
-print("="*50)
 #display top 5 sets with largest price increases
 print(most_appreciated[columns_to_print].head(5).to_string(index=False))
 
 #top themes
-print("\n" + "="*80)
 print("TOP 10 MOST PROFITABLE THEMES (By Average % ROI)")
-print("="*80)
 #calculate average ROI per theme
 theme_stats = df_clean.groupby('Theme')['ROI_Percent'].mean().sort_values(ascending=False)
 #select top 10 themes
@@ -71,16 +67,13 @@ for theme in target_themes:
         print(most_dep[columns_to_print].head(5).to_string(index=False))
 
 #last 10 years appreciate
-print("\n" + "="*80)
 print("TOP 5 PERFORMERS FROM THE LAST 10 YEARS (Released 2013-2023)")
-print("="*80)
 last_10_years = df_clean[df_clean['Year'] >= 2013]
 top_recent = last_10_years.sort_values(by='ROI_Percent', ascending=False)
 print(top_recent[columns_to_print].head(5).to_string(index=False))
 
 #top 5 depreciated print("\n" + "="*80)
 print("TOP 5 MOST DEPRECIATED LEGO SETS (Loss in Value)")
-print("="*80)
 most_depreciated = df_clean.sort_values(by='Value_Change', ascending=True)
 print(most_depreciated[columns_to_print].head(5).to_string(index=False))
 
@@ -96,9 +89,7 @@ df_ppp = df_clean.dropna(subset=['Pieces']).copy()
 df_ppp = df_ppp[df_ppp['Pieces'] > 0]
 df_ppp['PPP'] = df_ppp['USD_MSRP'] / df_ppp['Pieces']
 
-print("\n" + "="*50)
 print("POINT 1: THE 'IP TAX' (Licensed vs Original)")
-print("="*50)
 #this looks at licensed vs orignal ideas by lego and their prices
 licensed_themes = 'Star Wars|Harry Potter|Marvel|DC|Lord of the Rings|Indiana Jones|Disney|Jurassic'
 original_themes = 'City|Creator|Ninjago|Technic|Friends|Castle|Space|Bionicle'
@@ -112,9 +103,7 @@ print(f"Licensed Themes - Avg ROI: {df_licensed['ROI_Percent'].mean():.2f}%\n")
 print(f"Original Themes - Avg Price/Piece: ${df_original['PPP'].mean():.2f}")
 print(f"Original Themes - Avg ROI: {df_original['ROI_Percent'].mean():.2f}%")
 
-print("\n" + "="*50)
 print("POINT 2: THE MINIFIGURE PREMIUM")
-print("="*50)
 #this code looks at minifures and their impact on the rate of return in a set's price overtime
 df_minifigs = df_clean.dropna(subset=['Minifigures']).copy()
 
@@ -129,9 +118,7 @@ print("Top Appreciating Small Sets (Driven by Minifigures):")
 columns_mini = ['Name', 'Theme', 'Pieces', 'Minifigures', 'USD_MSRP', 'Current_Price', 'ROI_Percent']
 print(top_small_sets[columns_mini].to_string(index=False))
 
-print("\n" + "="*50)
 print("POINT 3: HISTORICAL PRICE-PER-PIECE (Check the charts!)")
-print("="*50)
 
 #this looks at the price per piece over time, which is what PPP stands for.
 #It compares the MSRP to the current day price of the set
@@ -143,9 +130,7 @@ print(f"Avg Price-Per-Piece in 1990: ${yearly_ppp.get(1990, 0):.2f}")
 print(f"Avg Price-Per-Piece in 2005: ${yearly_ppp.get(2005, 0):.2f}")
 print(f"Avg Price-Per-Piece in 2020: ${yearly_ppp.get(2020, 0):.2f}")
 
-print("\n" + "="*50)
 print("POINT 4: ROI BY DECADE")
-print("="*50)
 
 #goes throgh and looks at the different decades, and their rate of return in terms of percentages
 df_clean['Decade'] = (df_clean['Year'] // 10) * 10
@@ -155,9 +140,7 @@ for decade, roi in decade_roi.items():
     if int(decade) >= 1980:
         print(f"{int(decade)}s Average ROI: {roi:.2f}%")
 
-print("\n" + "="*50)
 print("POINT 5: RATING VS. FINANCIAL RETURN")
-print("="*50)
 
 df_rating = df_clean.dropna(subset=['Rating']).copy()
 rating_corr = df_rating['Rating'].corr(df_rating['ROI_Percent'])
