@@ -1,0 +1,35 @@
+# --- Security ---
+.env
+*.env
+secrets.json
+
+# --- Databases ---
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Data Files ---
+*.csv
+*.json
+!data_schema.json  # Example of keeping a schema file while ignoring data
+
+# --- Python Environment ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv
+venv/
+ENV/
+bin/
+lib/
+include/
+
+# --- Jupyter Notebooks ---
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# --- OS Specific ---
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
