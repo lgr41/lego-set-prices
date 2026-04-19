@@ -156,11 +156,3 @@ def get_lego_data_range(start_year, end_year):
         all_final_data.extend(year_sets)
             
     return pd.DataFrame(all_final_data)
-
-df_lego = get_lego_data_range(2000, 2026)
-
-df_lego.drop_duplicates(subset=['setID'], inplace=True)
-df_lego.reset_index(drop=True, inplace=True)
-
-print(f'\nSuccess! Total unique sets: {len(df_lego)}')
-display(df_lego.head())
