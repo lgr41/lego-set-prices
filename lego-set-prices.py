@@ -3,18 +3,19 @@ import matplotlib.pyplot as plt
 import requests
 import json
 import time
-#check required columns exist before plotting
 df = pd.read_csv('sets.csv')
+#check required columns exist before plotting
 if 'Current_Price' in df.columns and 'Year' in df.columns:
     yearly_avg = df.groupby('Year')['Current_Price'].mean()
+    #plot yearly average
     yearly_avg.plot(figsize=(10, 6))
-    plt.title('LEGO Average Current Price Trends Over Time')
-    plt.xlabel('Year')
-    plt.ylabel('Average Current Price (USD)')
-    plt.show()
-print(f"\nHighest priced set: ${df['Current_Price'].max()}")
-print(f"Lowest priced set: ${df['Current_Price'].min()}")
-print(f"Average price: ${df['Current_Price'].mean():.2f}")
+    plt.title('LEGO Average Current Price Trends Over Time') #Chart title
+    plt.xlabel('Year') #X-axis label
+    plt.ylabel('Average Current Price (USD)') #Y-axis label
+    plt.show() #display the plot
+print(f"\nHighest priced set: ${df['Current_Price'].max()}") #maximum price
+print(f"Lowest priced set: ${df['Current_Price'].min()}")#minimum price
+print(f"Average price: ${df['Current_Price'].mean():.2f}")#mean price
 df_clean = df.dropna(subset=['USD_MSRP', 'Current_Price']).copy()
 df_clean['Value_Change'] = df_clean['Current_Price'] - df_clean['USD_MSRP']
 df_clean['ROI_Percent'] = (df_clean['Value_Change'] / df_clean['USD_MSRP']) * 100
