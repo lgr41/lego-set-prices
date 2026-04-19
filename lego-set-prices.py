@@ -37,15 +37,19 @@ print(most_appreciated[columns_to_print].head(5).to_string(index=False))
 print("\n" + "="*80)
 print("TOP 10 MOST PROFITABLE THEMES (By Average % ROI)")
 print("="*80)
+#calculate average ROI per theme
 theme_stats = df_clean.groupby('Theme')['ROI_Percent'].mean().sort_values(ascending=False)
+#select top 10 themes
 top_10_themes = theme_stats.head(10)
+#print results
 print(top_10_themes.to_string())
+#plot bar chart of theme ROI
 plt.figure(figsize=(12, 6))
 top_10_themes.plot(kind='bar', color='skyblue')
 plt.title('Top 10 LEGO Themes by Average ROI %')
 plt.xlabel('Theme')
 plt.ylabel('Average Return on Investment (%)')
-plt.xticks(rotation=45)
+plt.xticks(rotation=45) #rotate labels for readability
 plt.tight_layout()
 plt.show()
 target_themes = ['Advanced Models', 'Minecraft', 'Harry Potter', 'Star Wars', 'Lord of the Rings', 'Indiana Jones']
