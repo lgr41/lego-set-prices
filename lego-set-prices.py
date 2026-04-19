@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import requests
 import json
 import time
-
+#check required columns exist before plotting
 df = pd.read_csv('sets.csv')
 if 'Current_Price' in df.columns and 'Year' in df.columns:
     yearly_avg = df.groupby('Year')['Current_Price'].mean()
