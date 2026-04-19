@@ -1,5 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import requests
+import json
+import time
+
 df = pd.read_csv('sets.csv')
 if 'Current_Price' in df.columns and 'Year' in df.columns:
     yearly_avg = df.groupby('Year')['Current_Price'].mean()
@@ -66,3 +70,97 @@ print("TOP 5 MOST DEPRECIATED LEGO SETS (Loss in Value)")
 print("="*80)
 most_depreciated = df_clean.sort_values(by='Value_Change', ascending=True)
 print(most_depreciated[columns_to_print].head(5).to_string(index=False))
+
+
+
+
+
+
+
+API_KEY = '3-MFJx-H0V0-sjn4a'
+BASE_URL = 'https://brickset.com/api/v3.asmx'
+
+def fetch_page(query_params):
+    payload = {'apiKey': API_KEY, 'userHash': '', 
+               'params': json.dumps(query_params)
+    }
+    
+    try:
+        response = requests.post((BASE_URL + '/getSets'), data=payload)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('status') == 'success':
+                return data
+            else:
+                print(f'API Error: {data.get('message')}')
+        else:
+            print(f'HTTP Error: {response.status_code}')
+            
+    except Exception as e:
+        print(f'Connection Error: {e}')
+    return None
+
+def process_sets(raw_sets):
+    extracted_data = []
+    for s in raw_sets:
+        legocom = s.get('LEGOCom', {}) or {}
+        us_details = legocom.get('US', {}) or {}
+        row = {
+            'setID': s.get('setID'),
+            'number': s.get('number'),
+            'numberVariant': s.get('numberVariant'),
+            'name': s.get('name'),
+            'year': s.get('year'),
+            'theme': s.get('theme'),
+            'subtheme': s.get('subtheme'),
+            'themeGroup': s.get('themeGroup'),
+            'category': s.get('category'),
+            'US_retailPrice': us_details.get('retailPrice'),
+            'pieces': s.get('pieces'),
+            'weight_kg': s.get('weight'),
+            'availability': s.get('availability'),
+            'rating': s.get('rating'),
+            'reviewCount': s.get('reviewCount')
+        }
+        extracted_data.append(row)
+    return extracted_data
+
+def get_lego_data_range(start_year, end_year):
+    all_final_data = []
+    
+    for year in range(start_year, end_year + 1):
+        print(f'Fetching {year}...', end=' ')
+        page = 1
+        year_sets = []
+        
+        while True:
+            params = {'year': str(year), 'pageSize': 500,
+                      'pageNumber': page, 'extendedData': '1'}
+            
+            result = fetch_page(params)
+            
+            if not result or not result.get('sets'):
+                break
+                
+            batch = process_sets(result['sets'])
+            year_sets.extend(batch)
+            
+            if len(year_sets) >= result.get('matches', 0) or len(result['sets']) < 500:
+                break
+            
+            page += 1
+            time.sleep(0.7)
+            
+        print(f'found {len(year_sets)} sets.')
+        all_final_data.extend(year_sets)
+            
+    return pd.DataFrame(all_final_data)
+
+df_lego = get_lego_data_range(2000, 2026)
+
+df_lego.drop_duplicates(subset=['setID'], inplace=True)
+df_lego.reset_index(drop=True, inplace=True)
+
+print(f'\nSuccess! Total unique sets: {len(df_lego)}')
+display(df_lego.head())
