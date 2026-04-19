@@ -72,6 +72,112 @@ most_depreciated = df_clean.sort_values(by='Value_Change', ascending=True)
 print(most_depreciated[columns_to_print].head(5).to_string(index=False))
 
 
+df = pd.read_csv('sets.csv')
+
+df_clean = df.dropna(subset=['USD_MSRP', 'Current_Price']).copy()
+
+df_clean['Value_Change'] = df_clean['Current_Price'] - df_clean['USD_MSRP']
+df_clean['ROI_Percent'] = (df_clean['Value_Change'] / df_clean['USD_MSRP']) * 100
+
+df_ppp = df_clean.dropna(subset=['Pieces']).copy()
+df_ppp = df_ppp[df_ppp['Pieces'] > 0]
+df_ppp['PPP'] = df_ppp['USD_MSRP'] / df_ppp['Pieces']
+
+print("\n" + "="*50)
+print("POINT 1: THE 'IP TAX' (Licensed vs Original)")
+print("="*50)
+
+licensed_themes = 'Star Wars|Harry Potter|Marvel|DC|Lord of the Rings|Indiana Jones|Disney|Jurassic'
+original_themes = 'City|Creator|Ninjago|Technic|Friends|Castle|Space|Bionicle'
+
+df_licensed = df_ppp[df_ppp['Theme'].str.contains(licensed_themes, case=False, na=False, regex=True)]
+df_original = df_ppp[df_ppp['Theme'].str.contains(original_themes, case=False, na=False, regex=True)]
+
+print(f"Licensed Themes - Avg Price/Piece: ${df_licensed['PPP'].mean():.2f}")
+print(f"Licensed Themes - Avg ROI: {df_licensed['ROI_Percent'].mean():.2f}%\n")
+
+print(f"Original Themes - Avg Price/Piece: ${df_original['PPP'].mean():.2f}")
+print(f"Original Themes - Avg ROI: {df_original['ROI_Percent'].mean():.2f}%")
+
+print("\n" + "="*50)
+print("POINT 2: THE MINIFIGURE PREMIUM")
+print("="*50)
+
+df_minifigs = df_clean.dropna(subset=['Minifigures']).copy()
+
+correlation = df_minifigs['Minifigures'].corr(df_minifigs['ROI_Percent'])
+print(f"Correlation between Minifigure Count and ROI: {correlation:.4f}")
+print("(A positive number means more minifigures = higher return on investment)\n")
+
+small_sets = df_minifigs[(df_minifigs['Pieces'] < 150) & (df_minifigs['Minifigures'] >= 3)]
+top_small_sets = small_sets.sort_values(by='ROI_Percent', ascending=False).head(3)
+
+print("Top Appreciating Small Sets (Driven by Minifigures):")
+columns_mini = ['Name', 'Theme', 'Pieces', 'Minifigures', 'USD_MSRP', 'Current_Price', 'ROI_Percent']
+print(top_small_sets[columns_mini].to_string(index=False))
+
+print("\n" + "="*50)
+print("POINT 3: HISTORICAL PRICE-PER-PIECE (Check the charts!)")
+print("="*50)
+
+yearly_ppp = df_ppp.groupby('Year')['PPP'].mean()
+yearly_msrp = df_ppp.groupby('Year')['USD_MSRP'].mean()
+yearly_pieces = df_ppp.groupby('Year')['Pieces'].mean()
+
+print(f"Avg Price-Per-Piece in 1990: ${yearly_ppp.get(1990, 0):.2f}")
+print(f"Avg Price-Per-Piece in 2005: ${yearly_ppp.get(2005, 0):.2f}")
+print(f"Avg Price-Per-Piece in 2020: ${yearly_ppp.get(2020, 0):.2f}")
+
+print("\n" + "="*50)
+print("POINT 4: ROI BY DECADE")
+print("="*50)
+
+df_clean['Decade'] = (df_clean['Year'] // 10) * 10
+decade_roi = df_clean.groupby('Decade')['ROI_Percent'].mean()
+
+for decade, roi in decade_roi.items():
+    if int(decade) >= 1980:
+        print(f"{int(decade)}s Average ROI: {roi:.2f}%")
+
+print("\n" + "="*50)
+print("POINT 5: RATING VS. FINANCIAL RETURN")
+print("="*50)
+
+df_rating = df_clean.dropna(subset=['Rating']).copy()
+rating_corr = df_rating['Rating'].corr(df_rating['ROI_Percent'])
+
+print(f"Correlation between Set Rating and ROI: {rating_corr:.4f}")
+print("If this is near 0, it means set quality/reviews don't drive secondary market value—scarcity and IPs do!")
+
+plt.style.use('ggplot')
+fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+
+axes[0, 0].plot(yearly_ppp.index, yearly_ppp.values, color='green')
+axes[0, 0].set_title('Avg Price-Per-Piece Over Time (PPP)')
+axes[0, 0].set_ylabel('Cost per Piece ($)')
+axes[0, 0].set_xlabel('Year')
+
+ax2 = axes[0, 1].twinx()
+axes[0, 1].plot(yearly_msrp.index, yearly_msrp.values, color='blue', label='Avg MSRP ($)')
+ax2.plot(yearly_pieces.index, yearly_pieces.values, color='orange', label='Avg Piece Count')
+axes[0, 1].set_title('Avg Set Price vs. Avg Piece Count')
+axes[0, 1].set_ylabel('MSRP in USD', color='blue')
+ax2.set_ylabel('Number of Pieces', color='orange')
+
+decade_roi_filtered = decade_roi[decade_roi.index >= 1980]
+axes[1, 0].bar(decade_roi_filtered.index.astype(str), decade_roi_filtered.values, color='purple')
+axes[1, 0].set_title('Average Market ROI by Decade')
+axes[1, 0].set_ylabel('Return on Investment (%)')
+axes[1, 0].set_xlabel('Decade')
+
+df_scatter = df_rating[df_rating['ROI_Percent'] <= 2000] 
+axes[1, 1].scatter(df_scatter['Rating'], df_scatter['ROI_Percent'], alpha=0.3, color='red')
+axes[1, 1].set_title('Does a Higher Rating Mean a Higher ROI?')
+axes[1, 1].set_ylabel('ROI (%)')
+axes[1, 1].set_xlabel('User Rating')
+
+plt.tight_layout()
+plt.show()
 
 
 
@@ -151,6 +257,9 @@ def get_lego_data_range(start_year, end_year):
             
             page += 1
             time.sleep(0.7)
+
+
+        
             
         print(f'found {len(year_sets)} sets.')
         all_final_data.extend(year_sets)
