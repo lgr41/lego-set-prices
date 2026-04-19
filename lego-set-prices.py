@@ -99,7 +99,7 @@ df_ppp['PPP'] = df_ppp['USD_MSRP'] / df_ppp['Pieces']
 print("\n" + "="*50)
 print("POINT 1: THE 'IP TAX' (Licensed vs Original)")
 print("="*50)
-
+#this looks at licensed vs orignal ideas by lego and their prices
 licensed_themes = 'Star Wars|Harry Potter|Marvel|DC|Lord of the Rings|Indiana Jones|Disney|Jurassic'
 original_themes = 'City|Creator|Ninjago|Technic|Friends|Castle|Space|Bionicle'
 
