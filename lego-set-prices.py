@@ -4,7 +4,6 @@ import requests
 import json
 import time
 import os
-
 load_dotenv()
 
 df = pd.read_csv('sets.csv')
