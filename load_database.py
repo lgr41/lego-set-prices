@@ -62,7 +62,8 @@ def initialize_database():
 
         conn.commit()
         print(f"Database 'legos.db' initialized successfully with {len(rows)} sets!")
-        
+
+    # Catch any errors that may arise
     except sqlite3.Error as e:
         print(f"Database error: {e}")
     except Exception as e:
