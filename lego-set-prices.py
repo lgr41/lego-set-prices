@@ -20,8 +20,11 @@ if 'Current_Price' in df.columns and 'Year' in df.columns:
 print(f"\nHighest priced set: ${df['Current_Price'].max()}") #maximum price
 print(f"Lowest priced set: ${df['Current_Price'].min()}")#minimum price
 print(f"Average price: ${df['Current_Price'].mean():.2f}")#mean price
+#remove rows missing MSRP or Current Price values
 df_clean = df.dropna(subset=['USD_MSRP', 'Current_Price']).copy()
+#calculate value change (profit or loss)
 df_clean['Value_Change'] = df_clean['Current_Price'] - df_clean['USD_MSRP']
+#calculate return on investment percentage
 df_clean['ROI_Percent'] = (df_clean['Value_Change'] / df_clean['USD_MSRP']) * 100
 most_appreciated = df_clean.sort_values(by='Value_Change', ascending=False)
 most_depreciated = df_clean.sort_values(by='Value_Change', ascending=True)
