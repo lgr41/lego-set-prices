@@ -115,7 +115,7 @@ print(f"Original Themes - Avg ROI: {df_original['ROI_Percent'].mean():.2f}%")
 print("\n" + "="*50)
 print("POINT 2: THE MINIFIGURE PREMIUM")
 print("="*50)
-
+#this code looks at minifures and their impact on the rate of return in a set's price overtime
 df_minifigs = df_clean.dropna(subset=['Minifigures']).copy()
 
 correlation = df_minifigs['Minifigures'].corr(df_minifigs['ROI_Percent'])
@@ -133,6 +133,8 @@ print("\n" + "="*50)
 print("POINT 3: HISTORICAL PRICE-PER-PIECE (Check the charts!)")
 print("="*50)
 
+#this looks at the price per piece over time, which is what PPP stands for.
+#It compares the MSRP to the current day price of the set
 yearly_ppp = df_ppp.groupby('Year')['PPP'].mean()
 yearly_msrp = df_ppp.groupby('Year')['USD_MSRP'].mean()
 yearly_pieces = df_ppp.groupby('Year')['Pieces'].mean()
@@ -145,6 +147,7 @@ print("\n" + "="*50)
 print("POINT 4: ROI BY DECADE")
 print("="*50)
 
+#goes throgh and looks at the different decades, and their rate of return in terms of percentages
 df_clean['Decade'] = (df_clean['Year'] // 10) * 10
 decade_roi = df_clean.groupby('Decade')['ROI_Percent'].mean()
 
