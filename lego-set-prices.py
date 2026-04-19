@@ -26,14 +26,15 @@ df_clean = df.dropna(subset=['USD_MSRP', 'Current_Price']).copy()
 df_clean['Value_Change'] = df_clean['Current_Price'] - df_clean['USD_MSRP']
 #calculate return on investment percentage
 df_clean['ROI_Percent'] = (df_clean['Value_Change'] / df_clean['USD_MSRP']) * 100
-most_appreciated = df_clean.sort_values(by='Value_Change', ascending=False)
-most_depreciated = df_clean.sort_values(by='Value_Change', ascending=True)
-columns_to_print = ['Name', 'Theme', 'USD_MSRP', 'Current_Price', 'Value_Change', 'ROI_Percent']
+most_appreciated = df_clean.sort_values(by='Value_Change', ascending=False)#sort sets by highest appreciation
+most_depreciated = df_clean.sort_values(by='Value_Change', ascending=True)#sort sets by highest depreciation
+columns_to_print = ['Name', 'Theme', 'USD_MSRP', 'Current_Price', 'Value_Change', 'ROI_Percent']#columns we want displayed in outputs
 print("\n" + "="*50)
 
 #top 5 most appreciated
 print("TOP 5 MOST APPRECIATED LEGO SETS (By Dollar Amount)")
 print("="*50)
+#display top 5 sets with largest price increases
 print(most_appreciated[columns_to_print].head(5).to_string(index=False))
 
 #top themes
@@ -49,9 +50,9 @@ print(top_10_themes.to_string())
 #plot bar chart of theme ROI
 plt.figure(figsize=(12, 6))
 top_10_themes.plot(kind='bar', color='skyblue')
-plt.title('Top 10 LEGO Themes by Average ROI %')
-plt.xlabel('Theme')
-plt.ylabel('Average Return on Investment (%)')
+plt.title('Top 10 LEGO Themes by Average ROI %')#title
+plt.xlabel('Theme')#X-axis label
+plt.ylabel('Average Return on Investment (%)')#y-axis label
 plt.xticks(rotation=45) #rotate labels for readability
 plt.tight_layout()
 plt.show()
