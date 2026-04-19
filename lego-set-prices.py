@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 import requests
 import json
 import time
+import os
+
+load_dotenv()
+
 df = pd.read_csv('sets.csv')
 #check required columns exist before plotting
 if 'Current_Price' in df.columns and 'Year' in df.columns:
@@ -184,7 +188,7 @@ plt.show()
 
 
 
-API_KEY = '3-MFJx-H0V0-sjn4a'
+API_KEY = os.getenv('BRICKSET_API_KEY')
 BASE_URL = 'https://brickset.com/api/v3.asmx'
 
 def fetch_page(query_params):
